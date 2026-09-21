@@ -3,6 +3,7 @@ package controller.admin;
 import dao.DatabaseDao;
 import dao.OrderDao;
 import dao.ProductDao;
+import dao.UserDao;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,6 +26,7 @@ public class AdminDashboardServlet extends BaseAdminServlet {
 
         ProductDao productDao = DatabaseDao.getInstance().getProductDao();
         OrderDao orderDao = DatabaseDao.getInstance().getOrderDao();
+        UserDao userDao = DatabaseDao.getInstance().getUserDao();
 
         List<Product> allProducts = productDao.findAll();
         List<Order> recentOrders = orderDao.findAll();
@@ -32,6 +34,7 @@ public class AdminDashboardServlet extends BaseAdminServlet {
         double totalRevenue = orderDao.sumTotalRevenue();
         int totalOrders = orderDao.countOrders();
         int totalProducts = allProducts.size();
+        int totalUsers = userDao.findAll().size();
 
         long lowStockCount = allProducts.stream().filter(p -> p.getQuantity() <= 10).count();
 
@@ -42,6 +45,7 @@ public class AdminDashboardServlet extends BaseAdminServlet {
         request.setAttribute("totalRevenue", totalRevenue);
         request.setAttribute("totalOrders", totalOrders);
         request.setAttribute("totalProducts", totalProducts);
+        request.setAttribute("totalUsers", totalUsers);
         request.setAttribute("lowStockCount", lowStockCount);
         request.setAttribute("recentOrders", recentOrders);
 

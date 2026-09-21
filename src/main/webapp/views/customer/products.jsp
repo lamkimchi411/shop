@@ -71,26 +71,20 @@
                 <c:forEach var="p" items="${products}">
                     <div class="collection-card">
                         <div class="collection-img-box" style="height: 300px;">
-                            <img src="${p.imageUrl != null ? p.imageUrl : 'https://images.unsplash.com/photo-1583391733956-6c78276477e2?auto=format&fit=crop&w=800&q=80'}" alt="${p.name}" />
+                            <a href="${pageContext.request.contextPath}/product-detail?id=${p.id}" aria-label="Xem chi tiết ${p.name}">
+                                <img src="${p.imageUrl != null ? p.imageUrl : 'https://images.unsplash.com/photo-1583391733956-6c78276477e2?auto=format&fit=crop&w=800&q=80'}" alt="${p.name}" />
+                            </a>
                         </div>
                         <div class="collection-body" style="padding: 16px;">
                             <div style="font-size: 0.72rem; color: var(--gold-accent); text-transform: uppercase; font-weight: 700; margin-bottom: 4px;">${p.categoryName != null ? p.categoryName : 'CỔ PHỤC'}</div>
-                            <h3 class="collection-name" style="font-size: 1.05rem; min-height: 2.6rem;">${p.name}</h3>
+                            <h3 class="collection-name" style="font-size: 1.05rem; min-height: 2.6rem;"><a href="${pageContext.request.contextPath}/product-detail?id=${p.id}" style="color: inherit; text-decoration: none;">${p.name}</a></h3>
                             <div class="collection-price" style="font-size: 1.15rem; margin-bottom: 14px;">
                                 <fmt:formatNumber value="${p.price}" type="currency" currencySymbol="VNĐ" maxFractionDigits="0"/>
                             </div>
                             <div style="display: flex; gap: 8px; margin-top: auto;">
-                                <a href="${pageContext.request.contextPath}/product-detail?id=${p.id}" class="btn-pill-outline" style="flex: 1; padding: 7px 10px; font-size: 0.75rem; justify-content: center;">
-                                    XEM
+                                <a href="${pageContext.request.contextPath}/checkout?productId=${p.id}" class="btn-pill-red" style="width: 100%; font-size: 0.75rem; padding: 8px 10px; justify-content: center;">
+                                    MUA NGAY
                                 </a>
-                                <form action="${pageContext.request.contextPath}/cart" method="post" style="flex: 1;">
-                                    <input type="hidden" name="action" value="add" />
-                                    <input type="hidden" name="productId" value="${p.id}" />
-                                    <input type="hidden" name="quantity" value="1" />
-                                    <button type="submit" class="btn-pill-red" style="width: 100%; font-size: 0.75rem; padding: 8px 10px; justify-content: center;">
-                                        ADD TO CART
-                                    </button>
-                                </form>
                             </div>
                         </div>
                     </div>

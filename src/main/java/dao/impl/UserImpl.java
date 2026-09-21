@@ -20,7 +20,7 @@ public class UserImpl implements UserDao {
     }
 
     private User mapUser(ResultSet rs) throws SQLException {
-        return new User(
+        User user = new User(
                 rs.getInt("id"),
                 rs.getString("username"),
                 rs.getString("password"),
@@ -30,6 +30,8 @@ public class UserImpl implements UserDao {
                 rs.getString("address"),
                 rs.getString("role")
         );
+        user.setActive(rs.getBoolean("is_active"));
+        return user;
     }
 
     @Override
@@ -56,22 +58,51 @@ public class UserImpl implements UserDao {
 
     @Override
     public boolean update(User user) {
-        String sql = "UPDATE users SET fullname = ?, email = ?, phone = ?, address = ?, role = ? WHERE id = ?";
+        String sql = "UPDATE users SET username = ?, fullname = ?, email = ?, phone = ?, address = ?, role = ? WHERE id = ?";
         try (Connection con = MySQLDriver.getInstance().getConnection()) {
             if (con == null) return false;
             try (PreparedStatement stmt = con.prepareStatement(sql)) {
-                stmt.setString(1, user.getFullname());
-                stmt.setString(2, user.getEmail());
-                stmt.setString(3, user.getPhone());
-                stmt.setString(4, user.getAddress());
-                stmt.setString(5, user.getRole());
-                stmt.setInt(6, user.getId());
+                stmt.setString(1, user.getUsername());
+                stmt.setString(2, user.getFullname());
+                stmt.setString(3, user.getEmail());
+                stmt.setString(4, user.getPhone());
+                stmt.setString(5, user.getAddress());
+                stmt.setString(6, user.getRole());
+                stmt.setInt(7, user.getId());
                 return stmt.executeUpdate() > 0;
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
+    }
+
+    @Override
+    public boolean setActive(int id, boolean active) {
+        String sql = "UPDATE users SET is_active = ? WHERE id = ?";
+        try (Connection con = MySQLDriver.getInstance().getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setBoolean(1, active);
+            stmt.setInt(2, id);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public boolean updatePassword(int id, String newPassword) {
+        String sql = "UPDATE users SET password = ? WHERE id = ?";
+        try (Connection con = MySQLDriver.getInstance().getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setString(1, BCrypt.hashpw(newPassword, BCrypt.gensalt()));
+            stmt.setInt(2, id);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Override
@@ -159,6 +190,7 @@ public class UserImpl implements UserDao {
             user = findByEmail(username);
         }
         if (user != null) {
+            if (!user.isActive()) return null;
             String hashed = user.getPassword();
             if (hashed.startsWith("$2a$") || hashed.startsWith("$2b$") || hashed.startsWith("$2y$")) {
                 if (BCrypt.checkpw(password, hashed)) return user;

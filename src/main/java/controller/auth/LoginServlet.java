@@ -51,6 +51,7 @@ public class LoginServlet extends BaseServlet {
         if (user != null) {
             HttpSession session = request.getSession(true);
             session.setAttribute("account", user);
+            session.setAttribute("successMsg", "Đăng nhập thành công. Chào mừng bạn trở lại!");
             response.sendRedirect(request.getContextPath() + "/home");
         } else {
             request.setAttribute("error", "Tên đăng nhập hoặc mật khẩu không chính xác!");

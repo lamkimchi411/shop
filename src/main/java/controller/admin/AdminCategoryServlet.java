@@ -70,15 +70,21 @@ public class AdminCategoryServlet extends BaseAdminServlet {
             return;
         }
 
-        Category category = new Category(name.trim(), description != null ? description.trim() : "");
-
-        if (idStr != null && !idStr.isEmpty()) {
-            category.setId(Integer.parseInt(idStr));
-            categoryDao.update(category);
-            request.getSession().setAttribute("successMsg", "Cập nhật danh mục thành công!");
-        } else {
-            categoryDao.insert(category);
-            request.getSession().setAttribute("successMsg", "Thêm danh mục mới thành công!");
+        try {
+            Category category = new Category(name.trim(), description != null ? description.trim() : "");
+            boolean success;
+            if (idStr != null && !idStr.isEmpty()) {
+                category.setId(Integer.parseInt(idStr));
+                success = categoryDao.update(category);
+                request.getSession().setAttribute(success ? "successMsg" : "errorMsg", success
+                        ? "Cập nhật danh mục thành công!" : "Cập nhật thất bại vì không tìm thấy danh mục hoặc cơ sở dữ liệu không phản hồi.");
+            } else {
+                success = categoryDao.insert(category);
+                request.getSession().setAttribute(success ? "successMsg" : "errorMsg", success
+                        ? "Thêm danh mục mới thành công!" : "Thêm danh mục thất bại vì cơ sở dữ liệu không phản hồi.");
+            }
+        } catch (Exception e) {
+            request.getSession().setAttribute("errorMsg", "Không thể lưu danh mục: " + e.getMessage());
         }
 
         response.sendRedirect(request.getContextPath() + "/admin/categories");

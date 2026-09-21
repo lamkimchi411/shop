@@ -76,9 +76,10 @@ public class AdminSettingsServlet extends BaseAdminServlet {
             newSettings.put("hero_floating_img", floatingImgUrl.trim());
         }
 
-        settingsDao.saveSettings(newSettings);
-
-        request.getSession().setAttribute("successMsg", "Cập nhật cài đặt giao diện Banner Stage thành công!");
+        boolean saved = settingsDao.saveSettings(newSettings);
+        request.getSession().setAttribute(saved ? "successMsg" : "errorMsg", saved
+                ? "Cập nhật cài đặt giao diện Banner Stage thành công!"
+                : "Cập nhật cài đặt thất bại vì bảng cấu hình chưa sẵn sàng hoặc cơ sở dữ liệu không phản hồi.");
         response.sendRedirect(request.getContextPath() + "/admin/settings");
     }
 

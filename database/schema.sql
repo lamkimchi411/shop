@@ -1,6 +1,9 @@
 -- SQL Schema cho Website Bán & Quản Lý Trang Phục Truyền Thống Việt Nam
 -- Tương thích MySQL / MariaDB & ANSI SQL
 
+-- Bắt buộc phiên làm việc dùng UTF-8 để không làm hỏng tiếng Việt khi import.
+SET NAMES utf8mb4;
+
 CREATE DATABASE IF NOT EXISTS `aodai_shop` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE `aodai_shop`;
 
@@ -19,7 +22,8 @@ CREATE TABLE `users` (
     `email` VARCHAR(100) NOT NULL,
     `phone` VARCHAR(20),
     `address` TEXT,
-    `role` VARCHAR(20) NOT NULL DEFAULT 'CUSTOMER' -- 'CUSTOMER' hoặc 'ADMIN'
+    `role` VARCHAR(20) NOT NULL DEFAULT 'CUSTOMER', -- 'CUSTOMER' hoặc 'ADMIN'
+    `is_active` BOOLEAN NOT NULL DEFAULT TRUE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 2. Bảng categories

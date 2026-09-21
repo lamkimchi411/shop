@@ -54,7 +54,40 @@ public class AdminProductServlet extends BaseAdminServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        if ("upload".equals(request.getParameter("action"))) {
+            uploadImage(request, response);
+            return;
+        }
         saveOrUpdateProduct(request, response);
+    }
+
+    private void uploadImage(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        response.setContentType("application/json;charset=UTF-8");
+        Part filePart = request.getPart("imageFile");
+        if (filePart == null || filePart.getSize() == 0) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().print("{\"success\":false,\"message\":\"Chưa chọn tệp ảnh.\"}");
+            return;
+        }
+        String submittedName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
+        if (!filePart.getContentType().startsWith("image/") || submittedName.isEmpty()) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().print("{\"success\":false,\"message\":\"Tệp đã chọn không phải là ảnh hợp lệ.\"}");
+            return;
+        }
+        String safeName = submittedName.replaceAll("[^A-Za-z0-9._-]", "_");
+        String savedFileName = System.currentTimeMillis() + "_" + safeName;
+        String uploadDir = getServletContext().getRealPath("/") + "static" + File.separator + "images";
+        File dir = new File(uploadDir);
+        if (!dir.exists() && !dir.mkdirs()) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().print("{\"success\":false,\"message\":\"Không thể tạo thư mục lưu ảnh.\"}");
+            return;
+        }
+        filePart.write(uploadDir + File.separator + savedFileName);
+        String url = request.getContextPath() + "/static/images/" + savedFileName;
+        response.getWriter().print("{\"success\":true,\"url\":\"" + url + "\"}");
     }
 
     private void listProducts(HttpServletRequest request, HttpServletResponse response)
@@ -91,17 +124,23 @@ public class AdminProductServlet extends BaseAdminServlet {
             throws ServletException, IOException {
 
         ProductDao productDao = DatabaseDao.getInstance().getProductDao();
+        request.setCharacterEncoding("UTF-8");
+        try {
+            String idStr = request.getParameter("id");
+            String name = request.getParameter("name");
+            double price = Double.parseDouble(request.getParameter("price"));
+            int quantity = Integer.parseInt(request.getParameter("quantity"));
+            String description = request.getParameter("description");
+            int categoryId = Integer.parseInt(request.getParameter("categoryId"));
+            String existingImage = request.getParameter("existingImage");
+            String imageUrl = request.getParameter("imageUrl");
+            if (name == null || name.trim().isEmpty() || price < 0 || quantity < 0) {
+                throw new IllegalArgumentException("Thông tin sản phẩm không hợp lệ.");
+            }
 
-        String idStr = request.getParameter("id");
-        String name = request.getParameter("name");
-        double price = Double.parseDouble(request.getParameter("price"));
-        int quantity = Integer.parseInt(request.getParameter("quantity"));
-        String description = request.getParameter("description");
-        int categoryId = Integer.parseInt(request.getParameter("categoryId"));
-        String existingImage = request.getParameter("existingImage");
-
-        String imagePath = existingImage != null && !existingImage.isEmpty() ? existingImage : "static/images/default-aodai.jpg";
-        Part filePart = request.getPart("imageFile");
+            String imagePath = imageUrl != null && !imageUrl.trim().isEmpty() ? imageUrl.trim()
+                    : (existingImage != null && !existingImage.isEmpty() ? existingImage : "static/images/default-aodai.jpg");
+            Part filePart = request.getPart("imageFile");
 
         if (filePart != null && filePart.getSize() > 0) {
             String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
@@ -114,15 +153,22 @@ public class AdminProductServlet extends BaseAdminServlet {
             imagePath = "static/images/" + savedFileName;
         }
 
-        Product product = new Product(name, price, quantity, imagePath, description, categoryId);
+            Product product = new Product(name.trim(), price, quantity, imagePath, description != null ? description.trim() : "", categoryId);
 
-        if (idStr != null && !idStr.isEmpty()) {
-            product.setId(Integer.parseInt(idStr));
-            productDao.update(product);
-            request.getSession().setAttribute("successMsg", "Cập nhật sản phẩm '" + name + "' thành công!");
-        } else {
-            productDao.insert(product);
-            request.getSession().setAttribute("successMsg", "Thêm mới sản phẩm '" + name + "' thành công!");
+            if (idStr != null && !idStr.isEmpty()) {
+                product.setId(Integer.parseInt(idStr));
+                boolean success = productDao.update(product);
+                request.getSession().setAttribute(success ? "successMsg" : "errorMsg", success
+                        ? "Cập nhật sản phẩm '" + name + "' thành công!"
+                        : "Cập nhật sản phẩm thất bại vì không tìm thấy sản phẩm hoặc cơ sở dữ liệu không phản hồi.");
+            } else {
+                boolean success = productDao.insert(product);
+                request.getSession().setAttribute(success ? "successMsg" : "errorMsg", success
+                        ? "Thêm mới sản phẩm '" + name + "' thành công!"
+                        : "Thêm sản phẩm thất bại vì cơ sở dữ liệu không phản hồi.");
+            }
+        } catch (Exception e) {
+            request.getSession().setAttribute("errorMsg", "Không thể lưu sản phẩm: " + e.getMessage());
         }
 
         response.sendRedirect(request.getContextPath() + "/admin/products");

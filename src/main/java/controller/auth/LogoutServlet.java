@@ -23,6 +23,7 @@ public class LogoutServlet extends BaseServlet {
         if (session != null) {
             session.invalidate();
         }
+        request.getSession(true).setAttribute("successMsg", "Đăng xuất thành công.");
         response.sendRedirect(request.getContextPath() + "/home");
     }
 

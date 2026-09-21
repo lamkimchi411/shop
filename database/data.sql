@@ -1,4 +1,7 @@
 -- Dữ liệu khởi tạo (Sample Data) cho Website Trang Phục Truyền Thống Việt Nam
+-- Bắt buộc phiên làm việc dùng UTF-8 để không làm hỏng tiếng Việt khi import.
+SET NAMES utf8mb4;
+
 USE `aodai_shop`;
 
 -- 1. Insert Categories

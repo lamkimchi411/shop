@@ -73,7 +73,11 @@ public class CartServlet extends BaseServlet {
                         if (product != null) {
                             cart.addItem(product, quantity);
                             session.setAttribute("successMsg", "Đã thêm '" + product.getName() + "' vào giỏ hàng thành công!");
+                        } else {
+                            session.setAttribute("errorMsg", "Không thể thêm vào giỏ vì sản phẩm không tồn tại hoặc đã bị xóa.");
                         }
+                    } else {
+                        session.setAttribute("errorMsg", "Không thể thêm vào giỏ vì mã sản phẩm không hợp lệ.");
                     }
                     break;
                 }
@@ -82,6 +86,9 @@ public class CartServlet extends BaseServlet {
                     if (productId > 0 && qParam != null) {
                         int quantity = Integer.parseInt(qParam.trim());
                         cart.updateItem(productId, quantity);
+                        session.setAttribute("successMsg", quantity > 0 ? "Đã cập nhật số lượng sản phẩm trong giỏ." : "Đã xóa sản phẩm có số lượng bằng 0 khỏi giỏ.");
+                    } else {
+                        session.setAttribute("errorMsg", "Không thể cập nhật giỏ hàng vì thiếu mã sản phẩm hoặc số lượng.");
                     }
                     break;
                 }
@@ -90,6 +97,8 @@ public class CartServlet extends BaseServlet {
                     if (productId > 0) {
                         cart.removeItem(productId);
                         session.setAttribute("successMsg", "Đã xóa sản phẩm khỏi giỏ hàng!");
+                    } else {
+                        session.setAttribute("errorMsg", "Không thể xóa sản phẩm vì mã sản phẩm không hợp lệ.");
                     }
                     break;
                 }
@@ -98,9 +107,11 @@ public class CartServlet extends BaseServlet {
                     session.setAttribute("successMsg", "Đã dọn dẹp giỏ hàng!");
                     break;
                 }
+                default:
+                    session.setAttribute("errorMsg", "Thao tác giỏ hàng không được hỗ trợ.");
             }
         } catch (Exception e) {
-            System.err.println("❌ CartServlet action error: " + e.getMessage());
+            session.setAttribute("errorMsg", "Không thể xử lý giỏ hàng: " + e.getMessage());
         }
 
         session.setAttribute("cartTotal", cart.getTotalMoney());

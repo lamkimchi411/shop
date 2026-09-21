@@ -16,6 +16,10 @@
     </div>
 
     <form action="${pageContext.request.contextPath}/checkout" method="post">
+        <c:if test="${directProduct != null}">
+            <input type="hidden" name="productId" value="${directProduct.id}" />
+            <input type="hidden" name="quantity" value="${directQuantity}" />
+        </c:if>
         <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 35px;">
             <!-- Customer Info & Payment Side -->
             <div style="background: var(--parchment-card); padding: 35px; border-radius: var(--radius-lg); border: 1px solid var(--parchment-border); box-shadow: var(--shadow-subtle);">
@@ -94,6 +98,17 @@
                     </h3>
 
                     <div style="max-height: 260px; overflow-y: auto; margin-bottom: 20px; padding-right: 5px;">
+                        <c:choose>
+                            <c:when test="${directProduct != null}">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px dashed var(--parchment-border);">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <img src="${directProduct.imageUrl != null ? directProduct.imageUrl : 'https://images.unsplash.com/photo-1583391733956-6c78276477e2?auto=format&fit=crop&w=400&q=80'}" alt="${directProduct.name}" style="width: 45px; height: 55px; object-fit: cover; border-radius: 6px;" />
+                                        <div><div style="font-weight: 700; font-size: 0.9rem; color: var(--dark-wood);">${directProduct.name}</div><div style="font-size: 0.78rem; color: var(--text-muted);">Mua ngay: x${directQuantity}</div></div>
+                                    </div>
+                                    <div style="font-weight: 700; font-size: 0.9rem; color: var(--primary-red);"><fmt:formatNumber value="${directTotal}" type="currency" currencySymbol="" maxFractionDigits="0"/> VNĐ</div>
+                                </div>
+                            </c:when>
+                            <c:otherwise>
                         <c:forEach var="item" items="${cart.items}">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px dashed var(--parchment-border);">
                                 <div style="display: flex; align-items: center; gap: 12px;">
@@ -108,12 +123,14 @@
                                 </div>
                             </div>
                         </c:forEach>
+                            </c:otherwise>
+                        </c:choose>
                     </div>
 
                     <div style="border-top: 2px solid var(--parchment-border); padding-top: 16px; margin-bottom: 25px;">
                         <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem;">
                             <span>Tạm tính:</span>
-                            <span style="font-weight: 700;"><fmt:formatNumber value="${cart.totalMoney}" type="currency" currencySymbol="" maxFractionDigits="0"/> VNĐ</span>
+                            <span style="font-weight: 700;"><fmt:formatNumber value="${directProduct != null ? directTotal : cart.totalMoney}" type="currency" currencySymbol="" maxFractionDigits="0"/> VNĐ</span>
                         </div>
                         <div style="display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 0.9rem;">
                             <span>Phí vận chuyển toàn quốc:</span>
@@ -122,7 +139,7 @@
                         <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--parchment-border); padding-top: 14px;">
                             <span style="font-size: 1.1rem; font-weight: 800; color: var(--dark-wood);">TỔNG CỘNG:</span>
                             <span style="font-size: 1.7rem; font-weight: 900; color: var(--primary-red); font-family: var(--font-heading);">
-                                <fmt:formatNumber value="${cart.totalMoney}" type="currency" currencySymbol="" maxFractionDigits="0"/> VNĐ
+                                <fmt:formatNumber value="${directProduct != null ? directTotal : cart.totalMoney}" type="currency" currencySymbol="" maxFractionDigits="0"/> VNĐ
                             </span>
                         </div>
                     </div>

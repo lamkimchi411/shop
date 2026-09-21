@@ -3,6 +3,9 @@
 -- Dự án: Website Bán & Quản Lý Trang Phục Truyền Thống Việt Nam
 -- ====================================================================
 
+-- Bắt buộc phiên làm việc dùng UTF-8 để không làm hỏng tiếng Việt khi import.
+SET NAMES utf8mb4;
+
 -- 1. TẠO CƠ SỞ DỮ LIỆU
 CREATE DATABASE IF NOT EXISTS `aodai_shop` 
 DEFAULT CHARACTER SET utf8mb4 
@@ -30,7 +33,8 @@ CREATE TABLE `users` (
     `email` VARCHAR(100) NOT NULL,
     `phone` VARCHAR(20),
     `address` TEXT,
-    `role` VARCHAR(20) NOT NULL DEFAULT 'CUSTOMER' -- 'CUSTOMER' hoặc 'ADMIN'
+    `role` VARCHAR(20) NOT NULL DEFAULT 'CUSTOMER', -- 'CUSTOMER' hoặc 'ADMIN'
+    `is_active` BOOLEAN NOT NULL DEFAULT TRUE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Bảng 2: categories (Danh mục sản phẩm)
@@ -84,12 +88,11 @@ INSERT INTO `categories` (`id`, `name`, `description`) VALUES
 (4, 'Áo Tứ Thân & Áo Bà Ba', 'Trang phục truyền thống miền Bắc và miền Tây Nam Bộ, mộc mạc và giàu bản sắc văn hóa.');
 
 -- Thêm Người Dùng Mẫu
--- Mật khẩu mẫu: 
--- admin    -> admin123 (Mã hóa băm BCrypt)
--- customer -> 123456   (Mã hóa băm BCrypt)
+-- Mật khẩu của hai tài khoản mẫu là: password
+-- Giá trị BCrypt dưới đây là hash hợp lệ của mật khẩu trên.
 INSERT INTO `users` (`id`, `username`, `password`, `fullname`, `email`, `phone`, `address`, `role`) VALUES
-(1, 'admin', '$2a$10$4.qHhQ1h5C4R7V4r4Y6u8e7W8o0I9u8y7t6r5e4w3q2a1b0c9d8e7', 'Quản Trị Viên', 'admin@aodaiviet.vn', '0901234567', '79 Hoàng Hoa Thám, Ba Đình, Hà Nội', 'ADMIN'),
-(2, 'customer', '$2a$10$8.wR9o2i6E5S8W5s5Z7v9f8X9p1J0v9z8u7s6t5u4v3w2x1y0z9a8', 'Nguyễn Thị Hoa', 'hoanguyen@gmail.com', '0987654321', '123 Nguyễn Huệ, Quận 1, TP. Hồ Chí Minh', 'CUSTOMER');
+(1, 'admin', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'Quản Trị Viên', 'admin@aodaiviet.vn', '0901234567', '79 Hoàng Hoa Thám, Ba Đình, Hà Nội', 'ADMIN'),
+(2, 'customer', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'Nguyễn Thị Hoa', 'hoanguyen@gmail.com', '0987654321', '123 Nguyễn Huệ, Quận 1, TP. Hồ Chí Minh', 'CUSTOMER');
 
 -- Thêm Sản Phẩm Áo Dài & Cổ Phục
 INSERT INTO `products` (`id`, `name`, `price`, `quantity`, `image`, `description`, `category_id`) VALUES

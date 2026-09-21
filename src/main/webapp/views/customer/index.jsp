@@ -29,6 +29,32 @@
 </section>
 
 <div class="container">
+    <!-- Sản phẩm lấy trực tiếp từ database -->
+    <section style="margin-bottom: 60px;">
+        <div class="section-header-center">
+            <div class="sub-tag">SẢN PHẨM MỚI</div>
+            <h2>MẪU CỔ PHỤC MỚI NHẤT</h2>
+        </div>
+        <div class="collection-grid" style="grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));">
+            <c:forEach var="p" items="${newsProductList}">
+                <article class="collection-card">
+                    <div class="collection-img-box" style="height: 300px;">
+                        <a href="${pageContext.request.contextPath}/product-detail?id=${p.id}" aria-label="Xem chi tiết ${p.name}">
+                            <img src="${p.imageUrl != null ? p.imageUrl : 'https://images.unsplash.com/photo-1583391733956-6c78276477e2?auto=format&fit=crop&w=800&q=80'}" alt="${p.name}" />
+                        </a>
+                    </div>
+                    <div class="collection-body" style="padding: 16px;">
+                        <div style="font-size: 0.72rem; color: var(--gold-accent); text-transform: uppercase; font-weight: 700;">${p.categoryName}</div>
+                        <h3 class="collection-name" style="font-size: 1.05rem;"><a href="${pageContext.request.contextPath}/product-detail?id=${p.id}" style="color: inherit; text-decoration: none;">${p.name}</a></h3>
+                        <div class="collection-price"><fmt:formatNumber value="${p.price}" type="currency" currencySymbol="VNĐ" maxFractionDigits="0"/></div>
+                        <a href="${pageContext.request.contextPath}/checkout?productId=${p.id}" class="btn-pill-red" style="width: 100%; margin-top: 12px; justify-content: center;">MUA NGAY</a>
+                    </div>
+                </article>
+            </c:forEach>
+        </div>
+        <div style="text-align: center; margin-top: 24px;"><a href="${pageContext.request.contextPath}/products" class="btn-pill-outline">XEM TẤT CẢ SẢN PHẨM</a></div>
+    </section>
+
     <!-- Heritage Collection 1: Vẻ Đẹp Huyền Bí Đêm Cung Đình (Image 1 Style) -->
     <section style="margin-bottom: 60px;">
         <div class="section-header-center">

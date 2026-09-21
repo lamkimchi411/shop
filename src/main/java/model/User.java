@@ -16,6 +16,7 @@ public class User implements Serializable {
     private String phone;
     private String address;
     private String role; // "CUSTOMER" hoặc "ADMIN"
+    private boolean active = true;
 
     public User() {
     }
@@ -107,5 +108,13 @@ public class User implements Serializable {
 
     public boolean isAdmin() {
         return "ADMIN".equalsIgnoreCase(this.role);
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }

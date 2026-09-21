@@ -45,9 +45,8 @@
                 </div>
             </div>
 
-            <!-- Size Selector & Add to Cart Form -->
-            <form action="${pageContext.request.contextPath}/cart" method="post">
-                <input type="hidden" name="action" value="add" />
+            <!-- Size Selector & Buy Now Form -->
+            <form action="${pageContext.request.contextPath}/checkout" method="get">
                 <input type="hidden" name="productId" value="${product.id}" />
 
                 <div style="margin-bottom: 20px;">
@@ -76,7 +75,7 @@
                     </div>
 
                     <button type="submit" class="btn-pill-red" style="flex: 1; padding: 14px; font-size: 1rem; justify-content: center;">
-                        <i class="fa-solid fa-cart-plus"></i> THÊM VÀO GIỎ HÀNG
+                        <i class="fa-solid fa-bag-shopping"></i> MUA NGAY
                     </button>
                 </div>
             </form>

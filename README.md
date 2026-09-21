@@ -26,6 +26,13 @@ user=root, password=123456
 Có thể ghi đè bằng các biến môi trường `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`
 và `DB_PASS`.
 
+Các file SQL dùng UTF-8. Trong MySQL Workbench, mở trực tiếp file `.sql` và chạy
+toàn bộ script; không dán nội dung qua công cụ đang dùng mã hóa khác. Script đã đặt
+`SET NAMES utf8mb4` để giữ nguyên dấu tiếng Việt.
+
+Nếu dữ liệu mẫu đã hiển thị thành dấu `?`, chạy `database/repair_utf8_sample_data.sql`.
+Script này chỉ sửa các bản ghi mẫu bị lỗi, không xóa các bảng.
+
 Sau khi nạp `database/data.sql`, có thể đăng nhập bằng `admin` hoặc `customer`
 với mật khẩu mẫu `password`. Hãy đổi hoặc xóa các tài khoản mẫu trước khi triển khai.
 
@@ -34,10 +41,11 @@ với mật khẩu mẫu `password`. Hãy đổi hoặc xóa các tài khoản m
 Từ thư mục dự án:
 
 ```bash
-mvn clean cargo:run
+mvn clean package cargo:run
 ```
 
-Cargo sẽ chạy Tomcat 10.x ở cổng `8080` và deploy ứng dụng tại:
+`package` phải chạy trước `cargo:run` để tạo file `target/shop.war`. Cargo sẽ
+chạy Tomcat 10.x ở cổng `8080` và deploy ứng dụng tại:
 
 ```text
 http://localhost:8080/shop/
